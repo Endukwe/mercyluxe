@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="12" y1="16" x2="52" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8f6d40"/>
+      <stop offset="0.5" stop-color="#c9a96a"/>
+      <stop offset="1" stop-color="#8f6d40"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="13" fill="#14110d"/>
+  <text x="32" y="45" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="600" fill="url(#g)" letter-spacing="1">ML</text>
+</svg>
