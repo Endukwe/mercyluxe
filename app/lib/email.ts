@@ -99,26 +99,44 @@ export async function sendBookingEmails(b: BookingDetails): Promise<void> {
   }
 
   // Send both; don't let one failure block the other.
-  const results = await Promise.allSettled([
-    resend.emails.send({
-      from: FROM,
-      to: b.clientEmail,
-      subject: "Your Mercy Luxe consultation is reserved",
-      html: clientHtml(b),
-      replyTo: STUDIO,
-    }),
-    resend.emails.send({
-      from: FROM,
-      to: STUDIO,
-      subject: `New booking: ${b.serviceName} - ${b.clientName || b.clientEmail}`,
-      html: studioHtml(b),
-      replyTo: b.clientEmail,
-    }),
-  ]);
+  // NOTE: resend.emails.send() resolves with { data, error } and does NOT throw
+  // on API errors - the failure lives in `error`. We must inspect it, or sends
+  // fail silently.
+  const send = (opts: Parameters<typeof resend.emails.send>[0], label: string) =>
+    resend.emails
+      .send(opts)
+      .then((res) => {
+        if (res.error) {
+          console.error(`[email] ${label} REJECTED by Resend:`, JSON.stringify(res.error));
+        } else {
+          console.log(`[email] ${label} sent, id=${res.data?.id}`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[email] ${label} threw:`, err);
+      });
 
-  results.forEach((r, i) => {
-    if (r.status === "rejected") {
-      console.error(`[email] ${i === 0 ? "client" : "studio"} email failed:`, r.reason);
-    }
-  });
+  console.log(`[email] sending from="${FROM}" client="${b.clientEmail}" studio="${STUDIO}"`);
+  await Promise.all([
+    send(
+      {
+        from: FROM,
+        to: b.clientEmail,
+        subject: "Your Mercy Luxe consultation is reserved",
+        html: clientHtml(b),
+        replyTo: STUDIO,
+      },
+      "client"
+    ),
+    send(
+      {
+        from: FROM,
+        to: STUDIO,
+        subject: `New booking: ${b.serviceName} - ${b.clientName || b.clientEmail}`,
+        html: studioHtml(b),
+        replyTo: b.clientEmail,
+      },
+      "studio"
+    ),
+  ]);
 }
