@@ -41,16 +41,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, duplicate: true });
   }
 
+  console.log(`[webhook] received type=${event.type} id=${event.id}`);
+  let handled = false;
+
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
+      const clientEmail = session.customer_email || session.customer_details?.email || "";
+      console.log(
+        `[webhook] checkout.session.completed payment_status=${session.payment_status} email=${clientEmail || "(none)"}`
+      );
 
-      // Only act on paid sessions.
       if (session.payment_status === "paid") {
-        const clientEmail =
-          session.customer_email || session.customer_details?.email || "";
         const meta = session.metadata ?? {};
-
         if (clientEmail) {
           await sendBookingEmails({
             clientName: meta.clientName || session.customer_details?.name || "",
@@ -60,19 +63,26 @@ export async function POST(req: Request) {
             preferredDate: meta.preferredDate || undefined,
             notes: meta.notes || undefined,
           });
+          handled = true;
         } else {
-          console.warn("[webhook] checkout.session.completed had no client email; skipping emails.");
+          console.warn("[webhook] no client email on session; skipping emails.");
         }
+      } else {
+        console.warn(`[webhook] session not paid (${session.payment_status}); skipping.`);
       }
+    } else {
+      console.log(`[webhook] ignoring event type ${event.type}`);
     }
-    // Other event types (payment_intent.succeeded, refunds, etc.) can be handled here later.
   } catch (err) {
-    // Release the claim so Stripe's retry can reprocess this event, then return
-    // 500 so Stripe knows to retry.
+    // Release the claim so Stripe's retry can reprocess, then 500 so Stripe retries.
     console.error("[webhook] Handler error:", err);
     await releaseEvent(event.id);
     return NextResponse.json({ error: "Handler error." }, { status: 500 });
   }
 
-  return NextResponse.json({ received: true });
+  // If we didn't actually do the work, free the claim so a resend/re-test isn't
+  // silently swallowed by the dedupe key.
+  if (!handled) await releaseEvent(event.id);
+
+  return NextResponse.json({ received: true, handled });
 }
