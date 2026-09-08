@@ -21,8 +21,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   // Only allow a safe subset of fields to be edited by the admin.
+  // NOTE: `status` is intentionally NOT editable here - it is system-owned
+  // (pending on invite, paid via the Stripe webhook) so payment state can't be
+  // corrupted by a manual override.
   const patch: Partial<Booking> = {};
-  if (body.status && ["pending", "paid", "cancelled"].includes(body.status)) patch.status = body.status;
   if (typeof body.meetingDate === "string") patch.meetingDate = body.meetingDate || undefined;
   if (Array.isArray(body.tags)) patch.tags = body.tags.slice(0, 20).map(String);
   if (typeof body.followUp === "boolean") patch.followUp = body.followUp;

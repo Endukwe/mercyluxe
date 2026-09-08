@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Star, Trash, ArrowLeft, Plus } from "@phosphor-icons/react";
-import { api, money, when, STATUS, KIND, type Booking, type BookingStatus, type NoteKind } from "../../ui";
+import { api, money, when, STATUS, KIND, type Booking, type NoteKind } from "../../ui";
 
 export default function BookingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -184,21 +184,13 @@ export default function BookingDetailPage() {
         <aside className="space-y-6">
           <div className="rounded-2xl border border-onyx/10 bg-white p-6">
             <h3 className="label-luxe text-[10px] text-onyx/40">Status</h3>
-            <div className="mt-3 flex flex-col gap-2">
-              {(["pending", "paid", "cancelled"] as BookingStatus[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => patch({ status: s })}
-                  disabled={saving}
-                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
-                    b.status === s ? "border-onyx bg-onyx text-ivory" : "border-onyx/15 hover:bg-onyx/5"
-                  }`}
-                >
-                  <span className="h-2 w-2 rounded-full" style={{ background: STATUS[s].dot }} />
-                  {STATUS[s].label}
-                </button>
-              ))}
+            <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-onyx/15 px-3 py-2 text-sm">
+              <span className="h-2 w-2 rounded-full" style={{ background: STATUS[b.status].dot }} />
+              {STATUS[b.status].label}
             </div>
+            <p className="mt-2.5 text-xs text-onyx/40">
+              Set automatically — pending on invite, confirmed once the deposit is paid.
+            </p>
           </div>
 
           <div className="rounded-2xl border border-onyx/10 bg-white p-6">
