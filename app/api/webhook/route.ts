@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { stripe } from "@/app/lib/stripe";
 import { sendBookingEmails } from "@/app/lib/email";
 import { claimEvent, releaseEvent } from "@/app/lib/dedupe";
+import { upsertPaidBooking } from "@/app/lib/bookings";
 
 // Stripe webhook receiver. Verifies the signature against the raw request body,
 // then acts on completed checkouts. Must run on the Node.js runtime and must
@@ -55,6 +56,24 @@ export async function POST(req: Request) {
       if (session.payment_status === "paid") {
         const meta = session.metadata ?? {};
         if (clientEmail) {
+          // Persist / complete the booking record (best-effort; never block email).
+          try {
+            await upsertPaidBooking({
+              bookingId: meta.bookingId || session.id,
+              stripeSessionId: session.id,
+              service: meta.serviceId || "",
+              serviceName: meta.serviceName || "Consultation",
+              clientName: meta.clientName || session.customer_details?.name || "",
+              clientEmail,
+              amountCents: session.amount_total ?? 0,
+              preferredDate: meta.preferredDate || undefined,
+              clientNotes: meta.notes || undefined,
+              source: meta.source === "admin" ? "admin" : "web",
+            });
+          } catch (e) {
+            console.error("[webhook] booking persist failed:", e);
+          }
+
           await sendBookingEmails({
             clientName: meta.clientName || session.customer_details?.name || "",
             clientEmail,

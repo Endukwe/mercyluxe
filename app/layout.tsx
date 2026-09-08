@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
-import { Nav } from "./components/Nav";
-import { Footer } from "./components/Footer";
+import { SiteFrame } from "./components/SiteFrame";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -39,9 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${cormorant.variable} ${jost.variable}`}>
       <body className="min-h-[100dvh] antialiased">
-        <Nav />
-        <main>{children}</main>
-        <Footer />
+        <SiteFrame>{children}</SiteFrame>
       </body>
     </html>
   );

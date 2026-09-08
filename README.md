@@ -122,8 +122,31 @@ every image `src` with real Mercy Luxe photography before launch** (search the
 codebase for `picsum.photos`). The brand logo (leaf sprig) is real inline SVG in
 `app/components/Sprig.tsx`.
 
+## Studio admin (`/admin`)
+
+A private studio dashboard — **not linked from the public site**. Data lives in
+Upstash Redis (same instance as webhook dedupe), so no extra service.
+
+- **Login:** single password. Set `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET`
+  (a long random string, e.g. `openssl rand -hex 32`). A correct password mints a
+  signed, httpOnly session cookie; [`middleware.ts`](middleware.ts) guards
+  `/admin/*` and `/api/admin/*`.
+- **Bookings** ([`/admin`](app/admin/page.tsx)) — every paid booking + admin
+  invites, filterable by status.
+- **Calendar** ([`/admin/calendar`](app/admin/calendar/page.tsx)) — month grid by
+  meeting/requested date; click a day to see its bookings and add quick notes.
+- **Booking detail** — status, scheduled meeting date, tags, follow-up star, and
+  a **notes timeline** (Note / Action / Preference) for meeting notes, action
+  points, and client preferences.
+- **New booking** ([`/admin/new`](app/admin/new/page.tsx)) — create a booking for
+  a client: generates a Stripe payment link, emails it (Resend), and the existing
+  webhook completes it (adds to calendar + sends confirmation emails) once paid.
+
+Storage/data layer: [`app/lib/bookings.ts`](app/lib/bookings.ts).
+
 ## Deploy
 
-Deploy to **Vercel**: push to a Git repo, import into Vercel, and add the three
-environment variables in the project settings. `NEXT_PUBLIC_SITE_URL` should be
-your production domain.
+Deploy to **Vercel**: push to a Git repo, import into Vercel, and add the
+environment variables from `.env.example` in the project settings (Stripe,
+Resend, Upstash, and the two `ADMIN_*` vars). `NEXT_PUBLIC_SITE_URL` should be
+your production domain. **Env changes require a redeploy to take effect.**

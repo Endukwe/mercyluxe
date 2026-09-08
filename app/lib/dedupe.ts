@@ -1,13 +1,8 @@
-import { Redis } from "@upstash/redis";
+import { redis } from "./redis";
 
 // Webhook idempotency via Upstash Redis. Stripe can deliver the same event more
 // than once (retries, at-least-once delivery); we claim each event id exactly
 // once so side effects (emails) run a single time.
-
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? Redis.fromEnv()
-    : null;
 
 // Stripe retries failed webhooks for up to ~3 days. Keep keys a bit longer.
 const TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days

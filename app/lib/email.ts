@@ -74,6 +74,63 @@ function clientHtml(b: BookingDetails): string {
   `);
 }
 
+function paymentLinkHtml(opts: {
+  clientName: string;
+  serviceName: string;
+  amountCents: number;
+  url: string;
+  message?: string;
+}): string {
+  const first = opts.clientName.trim().split(" ")[0] || "there";
+  return shell(`
+    <h1 style="font-size:30px;font-weight:normal;line-height:1.2;margin:0 0 16px;">Reserve your consultation</h1>
+    <p style="font-size:16px;line-height:1.6;margin:0 0 20px;">
+      ${first}, we've set aside a place for you. To confirm your ${opts.serviceName} consultation,
+      please complete the deposit below. It's credited in full toward your project.
+    </p>
+    ${
+      opts.message
+        ? `<p style="font-size:15px;line-height:1.6;margin:0 0 20px;padding:14px 16px;background:#efe8db;border-radius:8px;">${opts.message}</p>`
+        : ""
+    }
+    <table style="width:100%;border-collapse:collapse;margin:8px 0 24px;">
+      ${detailRow("Service", opts.serviceName)}
+      ${detailRow("Deposit", formatPrice(opts.amountCents))}
+    </table>
+    <a href="${opts.url}" style="display:inline-block;background:${ONYX};color:${IVORY};text-decoration:none;padding:14px 28px;border-radius:999px;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Complete your booking</a>
+    <p style="font-size:13px;line-height:1.6;opacity:.6;margin:22px 0 0;">
+      Or paste this link into your browser:<br/><span style="color:${GOLD};word-break:break-all;">${opts.url}</span>
+    </p>
+  `);
+}
+
+export async function sendPaymentLinkEmail(opts: {
+  clientName: string;
+  clientEmail: string;
+  serviceName: string;
+  amountCents: number;
+  url: string;
+  message?: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY not set - cannot send payment link.");
+    return { ok: false, error: "Email is not configured (RESEND_API_KEY)." };
+  }
+  const res = await resend.emails.send({
+    from: FROM,
+    to: opts.clientEmail,
+    subject: `Complete your Mercy Luxe ${opts.serviceName} booking`,
+    html: paymentLinkHtml(opts),
+    replyTo: STUDIO,
+  });
+  if (res.error) {
+    console.error("[email] payment link REJECTED by Resend:", JSON.stringify(res.error));
+    return { ok: false, error: JSON.stringify(res.error) };
+  }
+  console.log(`[email] payment link sent, id=${res.data?.id}`);
+  return { ok: true };
+}
+
 function studioHtml(b: BookingDetails): string {
   return shell(`
     <h1 style="font-size:26px;font-weight:normal;line-height:1.2;margin:0 0 16px;">New booking received</h1>
