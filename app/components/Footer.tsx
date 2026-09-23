@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { InstagramLogo, PinterestLogo, EnvelopeSimple } from "@phosphor-icons/react/dist/ssr";
+import { EnvelopeSimple } from "@phosphor-icons/react/dist/ssr";
 import { Logo } from "./Logo";
 
 export function Footer() {
@@ -36,12 +36,6 @@ export function Footer() {
           <div className="flex flex-col sm:items-start sm:text-left">
             <p className="label-luxe text-[11px] text-gold">Follow</p>
             <div className="mt-4 flex justify-center gap-5 sm:justify-start">
-              <a href="https://instagram.com" aria-label="Instagram" className="text-ivory/70 hover:text-gold">
-                <InstagramLogo size={22} weight="light" />
-              </a>
-              <a href="https://pinterest.com" aria-label="Pinterest" className="text-ivory/70 hover:text-gold">
-                <PinterestLogo size={22} weight="light" />
-              </a>
               <a href="mailto:Consults@MercyLuxe.net" aria-label="Email" className="text-ivory/70 hover:text-gold">
                 <EnvelopeSimple size={22} weight="light" />
               </a>
