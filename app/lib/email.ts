@@ -7,10 +7,10 @@ import { formatPrice } from "./services";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-// Verified sender domain in Resend, e.g. "Mercy Luxe <hello@mercyluxe.com>".
+// Verified sender domain in Resend, e.g. "Mercy Luxe <Consults@MercyLuxe.net>".
 // Falls back to Resend's shared onboarding sender for quick testing.
 const FROM = process.env.BOOKING_FROM_EMAIL || "Mercy Luxe <onboarding@resend.dev>";
-const STUDIO = process.env.STUDIO_EMAIL || "hello@mercyluxe.com";
+const STUDIO = process.env.STUDIO_EMAIL || "Consults@MercyLuxe.net";
 
 export type BookingDetails = {
   clientName: string;
@@ -24,6 +24,19 @@ export type BookingDetails = {
 const GOLD = "#b0895a";
 const ONYX = "#14110d";
 const IVORY = "#f5f0e8";
+
+// Escape untrusted values before interpolating into email HTML. Client name,
+// notes and service name originate from user/booking input; without this an
+// attacker could inject markup (links, spoofed content) into the emails we send
+// to the client and the studio.
+function esc(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 function shell(inner: string): string {
   return `
@@ -50,26 +63,25 @@ function detailRow(label: string, value: string): string {
   return `
   <tr>
     <td style="padding:8px 0;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${GOLD};width:140px;vertical-align:top;">${label}</td>
-    <td style="padding:8px 0;font-size:15px;color:${ONYX};">${value}</td>
+    <td style="padding:8px 0;font-size:15px;color:${ONYX};">${esc(value)}</td>
   </tr>`;
 }
 
 function clientHtml(b: BookingDetails): string {
-  const first = b.clientName.trim().split(" ")[0] || "there";
+  const first = esc(b.clientName.trim().split(" ")[0] || "there");
   return shell(`
     <h1 style="font-size:30px;font-weight:normal;line-height:1.2;margin:0 0 16px;">Your consultation is reserved</h1>
     <p style="font-size:16px;line-height:1.6;margin:0 0 24px;">
-      ${first}, thank you. We've received your deposit and we're looking forward to it. A member of the
+      ${first}, thank you. We've received your consultation fee and we're looking forward to it. A member of the
       studio will be in touch within two business days to schedule your session.
     </p>
     <table style="width:100%;border-collapse:collapse;margin:8px 0 24px;">
-      ${detailRow("Service", b.serviceName)}
-      ${detailRow("Deposit paid", formatPrice(b.amountCents))}
+      ${detailRow("Consultation", b.serviceName)}
+      ${detailRow("Fee paid", formatPrice(b.amountCents))}
       ${b.preferredDate ? detailRow("Preferred start", b.preferredDate) : ""}
     </table>
     <p style="font-size:14px;line-height:1.6;opacity:.7;margin:0;">
-      Your deposit is credited in full toward your project and is refundable within 48 hours. Questions?
-      Simply reply to this email.
+      Questions? Simply reply to this email.
     </p>
   `);
 }
@@ -81,21 +93,21 @@ function paymentLinkHtml(opts: {
   url: string;
   message?: string;
 }): string {
-  const first = opts.clientName.trim().split(" ")[0] || "there";
+  const first = esc(opts.clientName.trim().split(" ")[0] || "there");
   return shell(`
     <h1 style="font-size:30px;font-weight:normal;line-height:1.2;margin:0 0 16px;">Reserve your consultation</h1>
     <p style="font-size:16px;line-height:1.6;margin:0 0 20px;">
-      ${first}, we've set aside a place for you. To confirm your ${opts.serviceName} consultation,
-      please complete the deposit below. It's credited in full toward your project.
+      ${first}, we've set aside a place for you. To confirm your ${esc(opts.serviceName)} consultation,
+      please complete the consultation fee below.
     </p>
     ${
       opts.message
-        ? `<p style="font-size:15px;line-height:1.6;margin:0 0 20px;padding:14px 16px;background:#efe8db;border-radius:8px;">${opts.message}</p>`
+        ? `<p style="font-size:15px;line-height:1.6;margin:0 0 20px;padding:14px 16px;background:#efe8db;border-radius:8px;">${esc(opts.message)}</p>`
         : ""
     }
     <table style="width:100%;border-collapse:collapse;margin:8px 0 24px;">
-      ${detailRow("Service", opts.serviceName)}
-      ${detailRow("Deposit", formatPrice(opts.amountCents))}
+      ${detailRow("Consultation", opts.serviceName)}
+      ${detailRow("Fee", formatPrice(opts.amountCents))}
     </table>
     <a href="${opts.url}" style="display:inline-block;background:${ONYX};color:${IVORY};text-decoration:none;padding:14px 28px;border-radius:999px;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Complete your booking</a>
     <p style="font-size:13px;line-height:1.6;opacity:.6;margin:22px 0 0;">
@@ -137,8 +149,8 @@ function studioHtml(b: BookingDetails): string {
     <table style="width:100%;border-collapse:collapse;margin:8px 0 8px;">
       ${detailRow("Client", b.clientName || "-")}
       ${detailRow("Email", b.clientEmail)}
-      ${detailRow("Service", b.serviceName)}
-      ${detailRow("Deposit", formatPrice(b.amountCents))}
+      ${detailRow("Consultation", b.serviceName)}
+      ${detailRow("Fee", formatPrice(b.amountCents))}
       ${b.preferredDate ? detailRow("Preferred start", b.preferredDate) : ""}
       ${b.notes ? detailRow("Notes", b.notes) : ""}
     </table>
