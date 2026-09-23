@@ -61,7 +61,7 @@ export function BookingForm() {
 
       {/* Service selection */}
       <fieldset>
-        <legend className={labelCls}>Select a service</legend>
+        <legend className={labelCls}>Select a consultation</legend>
         <div className="grid gap-3">
           {SERVICES.map((s) => {
             const active = s.id === serviceId;
@@ -94,7 +94,7 @@ export function BookingForm() {
                   </span>
                 </div>
                 <span className="font-display shrink-0 text-lg tabular-nums text-gold-deep">
-                  {formatPrice(s.depositCents)}
+                  {formatPrice(s.feeCents)}
                 </span>
               </label>
             );
@@ -132,13 +132,19 @@ export function BookingForm() {
 
       <div className="rule-gold my-1 opacity-50" />
 
+      {selected?.creditNote && (
+        <p className="text-sm leading-relaxed text-gold-deep">{selected.creditNote}</p>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span className="label-luxe block text-[10px] text-onyx/50">Deposit today</span>
+          <span className="label-luxe block text-[10px] text-onyx/50">Consultation fee</span>
           <span className="font-display text-3xl tabular-nums text-onyx">
-            {selected ? formatPrice(selected.depositCents) : "-"}
+            {selected ? formatPrice(selected.feeCents) : "-"}
           </span>
-          <span className="ml-2 text-sm text-onyx/50">credited to your project</span>
+          {selected && (
+            <span className="ml-2 text-sm text-onyx/50">{selected.duration}</span>
+          )}
         </div>
 
         <button
@@ -152,7 +158,7 @@ export function BookingForm() {
             </>
           ) : (
             <>
-              <Lock size={15} weight="fill" /> Reserve &amp; Pay Deposit
+              <Lock size={15} weight="fill" /> Reserve &amp; Pay
             </>
           )}
         </button>

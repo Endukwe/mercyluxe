@@ -58,7 +58,9 @@ export function Nav() {
 
         <button
           onClick={() => setOpen(true)}
-          className="text-onyx lg:hidden"
+          className={`transition-colors duration-500 lg:hidden ${
+            scrolled ? "text-onyx" : "text-ivory drop-shadow-[0_1px_6px_rgba(20,17,13,0.45)]"
+          }`}
           aria-label="Open menu"
         >
           <List size={26} weight="light" />

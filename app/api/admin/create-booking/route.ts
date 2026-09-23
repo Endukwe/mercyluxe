@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     serviceName: service.name,
     clientName: body.name ?? "",
     clientEmail: body.email,
-    amountCents: service.depositCents,
+    amountCents: service.feeCents,
     preferredDate: body.preferredDate || undefined,
     adminNotes: body.adminNote?.trim()
       ? [{ id: newBookingId(), text: body.adminNote.trim().slice(0, 2000), kind: "note", createdAt: now }]
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
         clientName: booking.clientName,
         clientEmail: booking.clientEmail,
         serviceName: service.name,
-        amountCents: service.depositCents,
+        amountCents: service.feeCents,
         url,
         message: body.message?.trim() || undefined,
       })

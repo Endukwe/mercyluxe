@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   title: "Hospitality",
   description:
     "Boutique hotel, short-term rental, and commercial hospitality design built for five-star guest experiences.",
+  alternates: { canonical: "/hospitality" },
+  openGraph: {
+    title: "Hospitality | Mercy Luxe",
+    description:
+      "Boutique hotel, short-term rental, and commercial hospitality design built for five-star guest experiences.",
+    url: "/hospitality",
+    type: "website",
+  },
 };
 
 export default function HospitalityPage() {
@@ -13,27 +21,50 @@ export default function HospitalityPage() {
     <DisciplinePage
       content={{
         discipline: "Hospitality",
-        kicker: "Hospitality & Commercial",
-        title: "Spaces guests remember",
+        kicker: "Hospitality",
+        title: "Turn your space into an income-producing property",
         intro:
-          "Great hospitality design is felt before it is noticed. We craft guest-facing spaces that photograph beautifully, review five stars, and earn their keep.",
+          "Mercy Luxe Hospitality provides consulting, setup and optimization for short-, mid- and long-term rentals. We help clients move from an idea or available property to a thoughtfully positioned rental business — combining strategy, design and hospitality to create rentals that are attractive, functional and positioned to perform.",
         heroSeed: "mercyluxe-hospitality-hero",
         heroImage:
           "https://images.unsplash.com/photo-1554009975-d74653b879f1?q=80&w=2000&auto=format&fit=crop",
         offerings: [
           {
-            title: "Boutique hotels & venues",
-            copy: "Distinctive, brand-forward interiors that give guests a reason to stay, share, and return.",
+            title: "Rental consulting & strategy",
+            copy: "Short-, mid- and long-term rental strategy, market assessment, and the business and banking setup guidance to get you positioned to perform.",
           },
           {
-            title: "Short-term rental styling",
-            copy: "Turnkey design and styling tuned for occupancy and reviews, from the entry photo to the coffee bar.",
+            title: "Listing creation & optimization",
+            copy: "Airbnb, Vrbo and Furnished Finder account setup, listing creation, and pricing and positioning strategy that wins bookings.",
+          },
+          {
+            title: "Property setup & rental readiness",
+            copy: "Furniture and décor sourcing, space spruce-up, guest-experience planning, and the hosting systems that keep it running.",
           },
         ],
         offeringImages: [
           ux(PHOTO.hosPatternBed, 1200),
           ux(PHOTO.hosCozyChair, 1200),
+          ux(PHOTO.hosFireplace, 1200),
         ],
+        serviceList: [
+          "Short-term rental consulting",
+          "Mid-term & long-term rental strategy",
+          "Property and market assessment",
+          "Business registration & business setup guidance",
+          "Business banking / account setup guidance",
+          "Airbnb, Vrbo, Furnished Finder & other platform account setup",
+          "Listing creation & optimization",
+          "Pricing and positioning strategy",
+          "Guest-experience planning",
+          "Property setup and rental readiness",
+          "Furniture & décor sourcing",
+          "Rental space spruce-up",
+          "Hosting systems and operational guidance",
+          "Ongoing consulting and support",
+        ],
+        serviceListNote:
+          "Additional design, sourcing, setup and implementation services are quoted separately based on project scope.",
         gallerySeeds: [
           "hospitality-gallery-a",
           "hospitality-gallery-b",

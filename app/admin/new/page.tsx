@@ -122,7 +122,7 @@ export default function NewBookingPage() {
                   <span className="block text-sm font-medium">{s.name}</span>
                   <span className="label-luxe text-[10px] text-onyx/40">{s.discipline}</span>
                 </span>
-                <span className="font-display tabular-nums text-gold-deep">{money(s.depositCents)}</span>
+                <span className="font-display tabular-nums text-gold-deep">{money(s.feeCents)}</span>
               </label>
             ))}
           </div>
@@ -162,7 +162,7 @@ export default function NewBookingPage() {
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-onyx/50">
-            Deposit: <span className="font-display text-lg tabular-nums text-onyx">{money(service.depositCents)}</span>
+            Fee: <span className="font-display text-lg tabular-nums text-onyx">{money(service.feeCents)}</span>
           </span>
           <button
             type="submit"
