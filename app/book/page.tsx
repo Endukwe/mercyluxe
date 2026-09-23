@@ -6,13 +6,20 @@ import { BookingForm } from "../components/BookingForm";
 
 export const metadata: Metadata = {
   title: "Book a Consultation",
-  description: "Reserve your Mercy Luxe consultation. Deposits are credited toward your project.",
+  description: "Book a Mercy Luxe consultation — design, styling and rental strategy sessions.",
+  alternates: { canonical: "/book" },
+  openGraph: {
+    title: "Book a Consultation | Mercy Luxe",
+    description: "Book a Mercy Luxe consultation — design, styling and rental strategy sessions.",
+    url: "/book",
+    type: "website",
+  },
 };
 
 const ASSURANCES = [
   "A limited number of projects each season, so your work gets our full attention.",
-  "Your deposit is credited in full toward your project.",
-  "Fully refundable within 48 hours of booking.",
+  "A focused, private session with the studio.",
+  "The $250 Rental Strategy fee is creditable toward a qualifying full-service package.",
   "A reply within two business days.",
 ];
 
@@ -28,8 +35,8 @@ export default function BookPage() {
               Reserve your consultation
             </h1>
             <p className="mt-5 max-w-sm text-pretty leading-relaxed text-ivory/70">
-              Tell us what you are dreaming up. Your deposit secures your place and is credited toward
-              the project itself.
+              Tell us what you are dreaming up. Your consultation fee secures a private session with
+              the studio and a clear plan for next steps.
             </p>
             <ul className="mt-10 flex flex-col gap-4">
               {ASSURANCES.map((a) => (

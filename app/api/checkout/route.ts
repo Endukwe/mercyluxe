@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
   const { serviceId, name, email, preferredDate, notes } = body;
 
-  // Validate the service server-side. The deposit amount comes from our own
+  // Validate the service server-side. The fee amount comes from our own
   // catalog, never from the client, so it cannot be tampered with.
   const service = serviceId ? getService(serviceId) : undefined;
   if (!service) {

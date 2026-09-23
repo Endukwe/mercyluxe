@@ -1,8 +1,8 @@
 import { stripe, getSiteUrl } from "./stripe";
 import type { Service } from "./services";
 
-// Shared Stripe Checkout Session builder for booking deposits. Used by the
-// public booking form and by admin-created bookings. The deposit amount always
+// Shared Stripe Checkout Session builder for consultation fees. Used by the
+// public booking form and by admin-created bookings. The fee amount always
 // comes from the server-side catalog; bookingId ties the session back to our
 // stored Booking record so the webhook can complete it.
 export async function createDepositCheckout(opts: {
@@ -25,10 +25,10 @@ export async function createDepositCheckout(opts: {
         quantity: 1,
         price_data: {
           currency: "usd",
-          unit_amount: opts.service.depositCents,
+          unit_amount: opts.service.feeCents,
           product_data: {
-            name: `${opts.service.name} - Booking Deposit`,
-            description: "Credited toward your Mercy Luxe project. Fully refundable within 48 hours.",
+            name: `${opts.service.name} - Consultation Fee`,
+            description: "Mercy Luxe consultation fee.",
           },
         },
       },

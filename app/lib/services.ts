@@ -1,5 +1,6 @@
-// Bookable services and their consultation deposit amounts.
-// Deposits are charged via Stripe Checkout and credited toward the project.
+// Bookable consultations and their fees.
+// Fees are charged via Stripe Checkout. Fees are per-session; the Rental
+// Strategy fee is creditable toward a full-service package (see creditNote).
 // Amounts are in USD cents (Stripe's smallest currency unit).
 
 export type Service = {
@@ -7,50 +8,40 @@ export type Service = {
   name: string;
   discipline: "Interiors" | "Hospitality" | "Lifestyle";
   blurb: string;
-  depositCents: number;
+  feeCents: number;
   duration: string;
+  /** Optional note shown with the fee, e.g. credit-toward-package terms. */
+  creditNote?: string;
 };
 
 export const SERVICES: Service[] = [
   {
-    id: "residential-interiors",
-    name: "Residential Interiors",
+    id: "virtual-design-consult",
+    name: "Virtual Design Consultation",
     discipline: "Interiors",
-    blurb: "Full-home and single-room design, from concept to final styling.",
-    depositCents: 25000,
-    duration: "90-minute discovery session",
+    blurb: "Design advice, space feedback and styling recommendations.",
+    feeCents: 7500,
+    duration: "45 minutes",
   },
   {
-    id: "interiors-consult",
-    name: "Design Consultation",
+    id: "inhome-design-consult",
+    name: "In-Home Design Consultation",
     discipline: "Interiors",
-    blurb: "A focused working session for palette, layout, and sourcing direction.",
-    depositCents: 15000,
-    duration: "60-minute session",
+    blurb:
+      "On-site walkthrough, space planning, design direction and preliminary budget guidance.",
+    feeCents: 15000,
+    duration: "up to 90 minutes",
   },
   {
-    id: "hospitality-spaces",
-    name: "Hospitality & Commercial",
+    id: "rental-strategy-consult",
+    name: "Rental Strategy Consultation",
     discipline: "Hospitality",
-    blurb: "Boutique hotels, short-term rentals, and guest-facing spaces that convert.",
-    depositCents: 50000,
-    duration: "Scoping call + site review",
-  },
-  {
-    id: "str-styling",
-    name: "Short-Term Rental Styling",
-    discipline: "Hospitality",
-    blurb: "Turnkey design and styling built for five-star guest reviews.",
-    depositCents: 30000,
-    duration: "Property walk-through",
-  },
-  {
-    id: "lifestyle-styling",
-    name: "Lifestyle & Event Styling",
-    discipline: "Lifestyle",
-    blurb: "Editorial styling for gatherings, seasonal moments, and brand shoots.",
-    depositCents: 20000,
-    duration: "Concept session",
+    blurb:
+      "A private strategy session for a short-, mid- or long-term rental: evaluation, strategy, setup, platforms, pricing and next steps.",
+    feeCents: 25000,
+    duration: "45–60 minute private session",
+    creditNote:
+      "The $250 fee is credited toward a qualifying full-service Mercy Luxe package booked within 14 days.",
   },
 ];
 

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Check } from "@phosphor-icons/react/dist/ssr";
 import { Monogram } from "./Monogram";
 import { Reveal, RevealGroup, RevealItem } from "./Reveal";
 import { SERVICES, formatPrice } from "../lib/services";
@@ -19,6 +19,10 @@ export type DisciplineContent = {
   offerings: { title: string; copy: string }[];
   /** Optional explicit offering image URLs, one per offering. Falls back to picsum. */
   offeringImages?: string[];
+  /** Full service list shown as a compact checklist below the offerings. */
+  serviceList: string[];
+  /** Optional muted note under the checklist (e.g. "quoted separately"). */
+  serviceListNote?: string;
   gallerySeeds: string[];
   /** Optional explicit gallery image URLs. Falls back to gallerySeeds (picsum). */
   galleryImages?: string[];
@@ -94,6 +98,35 @@ export function DisciplinePage({ content }: { content: DisciplineContent }) {
         </div>
       </section>
 
+      {/* Full service list - compact checklist */}
+      <section className="bg-ivory-deep pb-24 pt-8 lg:pb-28">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+          <Reveal className="mb-10 max-w-xl">
+            <p className="label-luxe text-[11px] text-gold-deep">What we offer</p>
+            <h2 className="font-display mt-4 text-3xl font-light leading-[1.1] text-balance text-onyx sm:text-4xl">
+              Services at a glance
+            </h2>
+          </Reveal>
+          <RevealGroup className="grid gap-x-10 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+            {content.serviceList.map((item) => (
+              <RevealItem key={item}>
+                <div className="flex items-start gap-3 border-b border-onyx/10 pb-4">
+                  <Check size={16} weight="bold" className="mt-1 shrink-0 text-gold-deep" />
+                  <span className="text-pretty leading-relaxed text-onyx/80">{item}</span>
+                </div>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+          {content.serviceListNote && (
+            <Reveal>
+              <p className="mt-10 max-w-2xl text-sm italic leading-relaxed text-onyx/55">
+                {content.serviceListNote}
+              </p>
+            </Reveal>
+          )}
+        </div>
+      </section>
+
       {/* Gallery */}
       <section className="bg-ivory py-24 lg:py-32">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
@@ -121,46 +154,54 @@ export function DisciplinePage({ content }: { content: DisciplineContent }) {
         </div>
       </section>
 
-      {/* Services + deposits */}
-      <section className="ambient-warm-dark bg-onyx py-24 text-ivory lg:py-32">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-          <Reveal className="mb-14 max-w-xl">
-            <p className="label-luxe text-[11px] text-gold">Engage the Studio</p>
-            <h2 className="font-display mt-5 text-4xl font-light leading-[1.08] text-balance sm:text-5xl">
-              Ways to work together
-            </h2>
-            <p className="mt-5 text-pretty text-ivory/70">
-              Each engagement begins with a deposit, credited in full toward your project.
-            </p>
-          </Reveal>
+      {/* Consultations + fees */}
+      {services.length > 0 && (
+        <section className="ambient-warm-dark bg-onyx py-24 text-ivory lg:py-32">
+          <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+            <Reveal className="mb-14 max-w-xl">
+              <p className="label-luxe text-[11px] text-gold">Engage the Studio</p>
+              <h2 className="font-display mt-5 text-4xl font-light leading-[1.08] text-balance sm:text-5xl">
+                Book a consultation
+              </h2>
+              <p className="mt-5 text-pretty text-ivory/70">
+                Start with a paid consultation. Design, sourcing and setup services are quoted
+                separately based on project scope.
+              </p>
+            </Reveal>
 
-          <div className="grid gap-px overflow-hidden rounded-2xl border border-ivory/10 bg-ivory/10 md:grid-cols-2">
-            {services.map((s) => (
-              <div
-                key={s.id}
-                className="group flex flex-col justify-between gap-6 bg-onyx p-8 transition-colors duration-300 hover:bg-onyx-soft lg:p-10"
-              >
-                <div>
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h3 className="font-display text-2xl font-light">{s.name}</h3>
-                    <span className="font-display shrink-0 text-2xl tabular-nums text-gold">
-                      {formatPrice(s.depositCents)}
-                    </span>
-                  </div>
-                  <p className="mt-3 text-pretty text-sm leading-relaxed text-ivory/70">{s.blurb}</p>
-                  <p className="label-luxe mt-4 text-[10px] text-ivory/40">{s.duration}</p>
-                </div>
-                <Link
-                  href={`/book?service=${s.id}`}
-                  className="label-luxe inline-flex items-center gap-2 self-start rounded-full border border-gold px-6 py-3 text-[11px] text-gold transition-colors hover:bg-gold hover:text-onyx"
+            <div className="grid gap-px overflow-hidden rounded-2xl border border-ivory/10 bg-ivory/10 md:grid-cols-2">
+              {services.map((s) => (
+                <div
+                  key={s.id}
+                  className="group flex flex-col justify-between gap-6 bg-onyx p-8 transition-colors duration-300 hover:bg-onyx-soft lg:p-10"
                 >
-                  Reserve <ArrowRight size={14} weight="bold" />
-                </Link>
-              </div>
-            ))}
+                  <div>
+                    <div className="flex items-baseline justify-between gap-4">
+                      <h3 className="font-display text-2xl font-light">{s.name}</h3>
+                      <span className="font-display shrink-0 text-2xl tabular-nums text-gold">
+                        {formatPrice(s.feeCents)}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-pretty text-sm leading-relaxed text-ivory/70">{s.blurb}</p>
+                    <p className="label-luxe mt-4 text-[10px] text-ivory/40">{s.duration}</p>
+                    {s.creditNote && (
+                      <p className="mt-3 text-pretty text-xs leading-relaxed text-gold/80">
+                        {s.creditNote}
+                      </p>
+                    )}
+                  </div>
+                  <Link
+                    href={`/book?service=${s.id}`}
+                    className="label-luxe inline-flex items-center gap-2 self-start rounded-full border border-gold px-6 py-3 text-[11px] text-gold transition-colors hover:bg-gold hover:text-onyx"
+                  >
+                    Reserve <ArrowRight size={14} weight="bold" />
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

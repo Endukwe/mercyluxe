@@ -43,7 +43,7 @@ export default async function SuccessPage({
         <p className="mx-auto mt-6 max-w-md text-pretty leading-relaxed text-onyx/70">
           {clientName ? `${clientName.split(" ")[0]}, ` : ""}
           {serviceName
-            ? `your deposit for ${serviceName} has been received. `
+            ? `your consultation fee for ${serviceName} has been received. `
             : "your request has been received. "}
           We&apos;ll be in touch within two business days to schedule your session. A receipt is on its
           way to your inbox.

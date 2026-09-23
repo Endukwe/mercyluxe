@@ -87,22 +87,22 @@ export default function Home() {
               tall
               href="/interiors"
               eyebrow="Interiors"
-              title="Homes designed to be lived in"
-              copy="Full-service residential design, from architectural detail to the final styled shelf."
+              title="Beautiful spaces. Intentionally designed."
+              copy="Styling and design for homes and investment properties, from a single-room refresh to a full furnishing."
               src={ux(PHOTO.intWarmLiving, 1200)}
             />
             <DisciplineCard
               href="/hospitality"
               eyebrow="Hospitality"
-              title="Spaces guests remember"
-              copy="Boutique hotels and rentals engineered for five-star reviews."
+              title="An income-producing property"
+              copy="Consulting, setup and optimization for short-, mid- and long-term rentals built to perform."
               src={ux(PHOTO.hosWoodPanel, 1400)}
             />
             <DisciplineCard
               href="/lifestyle"
               eyebrow="Lifestyle"
-              title="The soft life, styled"
-              copy="Editorial styling and the Soft Life Summer collection."
+              title="Curated for the way you live"
+              copy="Fashion, curated products and experiences, including the Soft Life Summer collection."
               src={ux(PHOTO.lifHat, 1400)}
             />
           </div>
@@ -238,7 +238,7 @@ export default function Home() {
             Let&apos;s design something worth keeping
           </h2>
           <p className="mx-auto mt-7 max-w-lg text-pretty leading-relaxed text-ivory/70">
-            Consultations begin with a deposit credited toward your project. Tell us about your space
+            Start with a consultation — design, styling or rental strategy. Tell us about your space
             and we&apos;ll be in touch within two business days.
           </p>
           <Link

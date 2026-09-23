@@ -30,7 +30,7 @@ export function Footer() {
             <div className="mt-4 flex flex-col gap-2 text-sm text-ivory/70">
               <span>By appointment</span>
               <span>Columbus, Ohio</span>
-              <a href="mailto:hello@mercyluxe.com" className="hover:text-gold">hello@mercyluxe.com</a>
+              <a href="mailto:Consults@MercyLuxe.net" className="hover:text-gold">Consults@MercyLuxe.net</a>
             </div>
           </div>
           <div className="flex flex-col sm:items-start sm:text-left">
@@ -42,7 +42,7 @@ export function Footer() {
               <a href="https://pinterest.com" aria-label="Pinterest" className="text-ivory/70 hover:text-gold">
                 <PinterestLogo size={22} weight="light" />
               </a>
-              <a href="mailto:hello@mercyluxe.com" aria-label="Email" className="text-ivory/70 hover:text-gold">
+              <a href="mailto:Consults@MercyLuxe.net" aria-label="Email" className="text-ivory/70 hover:text-gold">
                 <EnvelopeSimple size={22} weight="light" />
               </a>
             </div>

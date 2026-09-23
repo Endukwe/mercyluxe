@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Mercy Luxe is a Columbus, Ohio studio for luxury interiors, hospitality, and lifestyle. Rooted in family, built for legacy.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About | Mercy Luxe",
+    description:
+      "Mercy Luxe is a Columbus, Ohio studio for luxury interiors, hospitality, and lifestyle. Rooted in family, built for legacy.",
+    url: "/about",
+    type: "website",
+  },
 };
 
 const VALUES = [
