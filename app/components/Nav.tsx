@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useMotionValueEvent, useScroll, AnimatePresence } from "motion/react";
 import { List, X } from "@phosphor-icons/react";
 import { Logo } from "./Logo";
@@ -14,6 +14,10 @@ const LINKS = [
   { href: "/about", label: "About" },
 ];
 
+// Routes whose top of page has a dark hero, so the ivory logo is legible there.
+// Other routes (e.g. /book) start on a light background and need the dark logo.
+const DARK_HERO_ROUTES = ["/", "/interiors", "/hospitality", "/lifestyle", "/about"];
+
 export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -21,6 +25,19 @@ export function Nav() {
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
+
+  // Lock body scroll while the mobile menu is open so the page can't slide behind it.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  const darkHero = DARK_HERO_ROUTES.includes(pathname);
+  const onDark = !scrolled && darkHero;
 
   return (
     <header
@@ -31,7 +48,7 @@ export function Nav() {
       }`}
     >
       <nav className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-6 lg:px-10">
-        <Logo variant="compact" onDark={!scrolled} priority />
+        <Logo variant="compact" onDark={onDark} priority />
 
         <div className="hidden items-center gap-9 lg:flex">
           {LINKS.map((l) => {
@@ -59,7 +76,7 @@ export function Nav() {
         <button
           onClick={() => setOpen(true)}
           className={`transition-colors duration-500 lg:hidden ${
-            scrolled ? "text-onyx" : "text-ivory drop-shadow-[0_1px_6px_rgba(20,17,13,0.45)]"
+            onDark ? "text-ivory drop-shadow-[0_1px_6px_rgba(20,17,13,0.45)]" : "text-onyx"
           }`}
           aria-label="Open menu"
         >
@@ -70,7 +87,7 @@ export function Nav() {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-50 flex flex-col bg-ivory px-6 pt-6 lg:hidden"
+            className="fixed inset-0 z-50 flex flex-col overflow-y-auto overscroll-contain bg-ivory px-6 pt-6 lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
