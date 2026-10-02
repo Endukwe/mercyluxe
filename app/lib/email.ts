@@ -157,6 +157,100 @@ function studioHtml(b: BookingDetails): string {
   `);
 }
 
+export type GuestDetails = {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  platformLabel: string;
+  reservationCode: string;
+  space: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  marketingOptIn: boolean;
+};
+
+function guestHtml(g: GuestDetails): string {
+  const first = esc(g.fullName.trim().split(" ")[0] || "there");
+  return shell(`
+    <h1 style="font-size:30px;font-weight:normal;line-height:1.2;margin:0 0 16px;">Registration received</h1>
+    <p style="font-size:16px;line-height:1.6;margin:0 0 24px;">
+      ${first}, thank you for completing your guest registration. We look forward to hosting you.
+    </p>
+    <table style="width:100%;border-collapse:collapse;margin:8px 0 24px;">
+      ${detailRow("Space", g.space)}
+      ${detailRow("Check-in", g.checkIn)}
+      ${detailRow("Check-out", g.checkOut)}
+      ${detailRow("Guests", String(g.guests))}
+    </table>
+    <p style="font-size:14px;line-height:1.6;opacity:.7;margin:0;">
+      Questions before your stay? Simply reply to this email.
+    </p>
+  `);
+}
+
+function studioGuestHtml(g: GuestDetails): string {
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || "https://mercyluxe.net").replace(/\/$/, "");
+  const url = `${site}/admin/guests/${encodeURIComponent(g.id)}`;
+  return shell(`
+    <h1 style="font-size:26px;font-weight:normal;line-height:1.2;margin:0 0 16px;">New guest registration</h1>
+    <table style="width:100%;border-collapse:collapse;margin:8px 0 24px;">
+      ${detailRow("Guest", g.fullName)}
+      ${detailRow("Email", g.email)}
+      ${detailRow("Phone", g.phone)}
+      ${detailRow("Booked via", g.platformLabel)}
+      ${detailRow("Reservation", g.reservationCode)}
+      ${detailRow("Space", g.space)}
+      ${detailRow("Stay", `${g.checkIn} to ${g.checkOut}`)}
+      ${detailRow("Guests", String(g.guests))}
+      ${detailRow("Marketing", g.marketingOptIn ? "Opted in" : "Not opted in")}
+    </table>
+    <a href="${url}" style="display:inline-block;background:${ONYX};color:${IVORY};text-decoration:none;padding:14px 28px;border-radius:999px;font-size:12px;letter-spacing:2px;text-transform:uppercase;">View ID in admin</a>
+    <p style="font-size:13px;line-height:1.6;opacity:.6;margin:22px 0 0;">
+      The photo ID is not attached for security. It is viewable in admin for 30 days, then deleted automatically.
+    </p>
+  `);
+}
+
+export async function sendGuestEmails(g: GuestDetails): Promise<void> {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY not set - skipping guest registration emails.");
+    return;
+  }
+  const send = (opts: Parameters<typeof resend.emails.send>[0], label: string) =>
+    resend.emails
+      .send(opts)
+      .then((res) => {
+        if (res.error) console.error(`[email] ${label} REJECTED by Resend:`, JSON.stringify(res.error));
+        else console.log(`[email] ${label} sent, id=${res.data?.id}`);
+      })
+      .catch((err) => console.error(`[email] ${label} threw:`, err));
+
+  await Promise.all([
+    send(
+      {
+        from: FROM,
+        to: g.email,
+        subject: "Your Mercy Luxe guest registration is complete",
+        html: guestHtml(g),
+        replyTo: STUDIO,
+      },
+      "guest"
+    ),
+    send(
+      {
+        from: FROM,
+        to: STUDIO,
+        subject: `New guest registration: ${g.fullName} - ${g.space}`,
+        html: studioGuestHtml(g),
+        replyTo: g.email,
+      },
+      "studio-guest"
+    ),
+  ]);
+}
+
 export async function sendBookingEmails(b: BookingDetails): Promise<void> {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY not set - skipping emails. Booking:", {
