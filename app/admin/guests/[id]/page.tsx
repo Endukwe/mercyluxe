@@ -53,12 +53,15 @@ export default function GuestDetailPage() {
   const rows: [string, string][] = [
     ["Email", g.email],
     ["Phone", g.phone],
+    ["Address", g.address],
     ["Booked via", PLATFORMS[g.platform] ?? g.platform],
     ["Reservation", g.reservationCode],
-    ["Space", g.space],
     ["Check-in", g.checkIn],
     ["Check-out", g.checkOut],
     ["Guests", String(g.guests)],
+    ["Emergency contact", g.emergencyName],
+    ["Emergency phone", g.emergencyPhone],
+    ["Emergency address", g.emergencyAddress],
     ["Marketing", g.marketingOptIn ? "Opted in" : "Not opted in"],
     ["Submitted", when(g.createdAt)],
   ];
@@ -76,7 +79,7 @@ export default function GuestDetailPage() {
             {rows.map(([k, v]) => (
               <div key={k} className="flex gap-4 px-5 py-3 text-sm">
                 <dt className="w-32 shrink-0 text-[11px] uppercase tracking-wider text-onyx/40">{k}</dt>
-                <dd className="break-all text-onyx/80">{v}</dd>
+                <dd className="whitespace-pre-line break-words text-onyx/80">{v}</dd>
               </div>
             ))}
           </dl>

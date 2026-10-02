@@ -9,12 +9,15 @@ type Fields = {
   fullName: string;
   email: string;
   phone: string;
+  address: string;
   platform: Platform | "";
   reservationCode: string;
-  space: string;
   checkIn: string;
   checkOut: string;
   guests: string;
+  emergencyName: string;
+  emergencyPhone: string;
+  emergencyAddress: string;
   marketingOptIn: boolean;
 };
 
@@ -22,12 +25,15 @@ const EMPTY: Fields = {
   fullName: "",
   email: "",
   phone: "",
+  address: "",
   platform: "",
   reservationCode: "",
-  space: "",
   checkIn: "",
   checkOut: "",
   guests: "1",
+  emergencyName: "",
+  emergencyPhone: "",
+  emergencyAddress: "",
   marketingOptIn: false,
 };
 
@@ -182,6 +188,10 @@ export function GuestForm() {
           <label htmlFor="phone" className={labelCls}>Phone</label>
           <input id="phone" type="tel" value={f.phone} onChange={(e) => set("phone", e.target.value)} className={inputCls} placeholder="+1 614 555 0123" autoComplete="tel" maxLength={25} required />
         </div>
+        <div className="sm:col-span-2">
+          <label htmlFor="address" className={labelCls}>Home address</label>
+          <textarea id="address" value={f.address} onChange={(e) => set("address", e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder="Street, city, state, ZIP, country" autoComplete="street-address" maxLength={250} required />
+        </div>
       </div>
 
       <div className="rule-gold my-1 opacity-50" />
@@ -200,10 +210,6 @@ export function GuestForm() {
           <label htmlFor="reservationCode" className={labelCls}>Reservation code</label>
           <input id="reservationCode" value={f.reservationCode} onChange={(e) => set("reservationCode", e.target.value)} className={`${inputCls} uppercase`} placeholder="HMABC12345" maxLength={40} autoComplete="off" required />
         </div>
-        <div className="sm:col-span-2">
-          <label htmlFor="space" className={labelCls}>Space booked</label>
-          <input id="space" value={f.space} onChange={(e) => set("space", e.target.value)} className={inputCls} placeholder="Name of the property" maxLength={120} required />
-        </div>
         <div>
           <label htmlFor="checkIn" className={labelCls}>Check-in</label>
           <input id="checkIn" type="date" value={f.checkIn} onChange={(e) => set("checkIn", e.target.value)} className={inputCls} required />
@@ -215,6 +221,24 @@ export function GuestForm() {
         <div>
           <label htmlFor="guests" className={labelCls}>Number of guests</label>
           <input id="guests" type="number" inputMode="numeric" min={1} max={20} step={1} value={f.guests} onChange={(e) => set("guests", e.target.value)} className={inputCls} required />
+        </div>
+      </div>
+
+      <div className="rule-gold my-1 opacity-50" />
+
+      <div className="grid gap-6 sm:grid-cols-2">
+        <p className="label-luxe text-[10px] text-onyx/60 sm:col-span-2">Emergency contact</p>
+        <div>
+          <label htmlFor="emergencyName" className={labelCls}>Name</label>
+          <input id="emergencyName" value={f.emergencyName} onChange={(e) => set("emergencyName", e.target.value)} className={inputCls} autoComplete="off" maxLength={100} required />
+        </div>
+        <div>
+          <label htmlFor="emergencyPhone" className={labelCls}>Phone</label>
+          <input id="emergencyPhone" type="tel" value={f.emergencyPhone} onChange={(e) => set("emergencyPhone", e.target.value)} className={inputCls} placeholder="+1 614 555 0123" autoComplete="off" maxLength={25} required />
+        </div>
+        <div className="sm:col-span-2">
+          <label htmlFor="emergencyAddress" className={labelCls}>Address</label>
+          <textarea id="emergencyAddress" value={f.emergencyAddress} onChange={(e) => set("emergencyAddress", e.target.value)} rows={2} className={`${inputCls} resize-none`} placeholder="Street, city, state, ZIP, country" autoComplete="off" maxLength={250} required />
         </div>
       </div>
 

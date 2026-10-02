@@ -6,8 +6,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Neutralise spreadsheet formula injection (=, +, -, @, tab, CR) and quote.
+// Newlines (multi-line addresses) are flattened so each record stays one row.
 function csvCell(v: unknown): string {
-  let s = String(v ?? "");
+  let s = String(v ?? "").replace(/\r?\n/g, ", ");
   if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   return `"${s.replace(/"/g, '""')}"`;
 }
@@ -19,13 +20,17 @@ export async function GET(req: Request) {
   if (url.searchParams.get("format") === "csv") {
     const optedOnly = url.searchParams.get("optedIn") === "1";
     const rows = guests.filter((g) => !optedOnly || g.marketingOptIn);
-    const header = ["Name", "Email", "Phone", "Platform", "Reservation", "Space", "Check-in", "Check-out", "Guests", "Marketing opt-in", "Submitted"];
+    const header = [
+      "Name", "Email", "Phone", "Address", "Platform", "Reservation", "Check-in", "Check-out", "Guests",
+      "Emergency name", "Emergency phone", "Emergency address", "Marketing opt-in", "Submitted",
+    ];
     const lines = [
       header.map(csvCell).join(","),
       ...rows.map((g) =>
         [
-          g.fullName, g.email, g.phone, PLATFORMS[g.platform] ?? g.platform, g.reservationCode, g.space,
-          g.checkIn, g.checkOut, g.guests, g.marketingOptIn ? "yes" : "no", new Date(g.createdAt).toISOString(),
+          g.fullName, g.email, g.phone, g.address, PLATFORMS[g.platform] ?? g.platform, g.reservationCode,
+          g.checkIn, g.checkOut, g.guests, g.emergencyName, g.emergencyPhone, g.emergencyAddress,
+          g.marketingOptIn ? "yes" : "no", new Date(g.createdAt).toISOString(),
         ].map(csvCell).join(",")
       ),
     ];
