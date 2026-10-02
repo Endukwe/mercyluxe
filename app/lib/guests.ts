@@ -16,12 +16,15 @@ export type Guest = {
   fullName: string;
   email: string;
   phone: string;
+  address: string;
   platform: Platform;
   reservationCode: string;
-  space: string;
   checkIn: string; // YYYY-MM-DD
   checkOut: string; // YYYY-MM-DD
   guests: number;
+  emergencyName: string;
+  emergencyPhone: string;
+  emergencyAddress: string;
   marketingOptIn: boolean;
   idExpiresAt: number; // ms; image key expires at (about) this time
   createdAt: number;

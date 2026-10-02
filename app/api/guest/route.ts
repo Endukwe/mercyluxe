@@ -71,7 +71,7 @@ export async function POST(req: Request) {
   }
 
   const fields: Record<string, unknown> = {};
-  for (const k of ["fullName", "email", "phone", "platform", "reservationCode", "space", "checkIn", "checkOut", "guests", "marketingOptIn"]) {
+  for (const k of ["fullName", "email", "phone", "address", "platform", "reservationCode", "checkIn", "checkOut", "guests", "emergencyName", "emergencyPhone", "emergencyAddress", "marketingOptIn"]) {
     const v = form.get(k);
     fields[k] = typeof v === "string" ? v : "";
   }

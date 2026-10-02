@@ -8,12 +8,15 @@ export type GuestInput = {
   fullName: string;
   email: string;
   phone: string;
+  address: string;
   platform: Platform;
   reservationCode: string;
-  space: string;
   checkIn: string;
   checkOut: string;
   guests: number;
+  emergencyName: string;
+  emergencyPhone: string;
+  emergencyAddress: string;
   marketingOptIn: boolean;
 };
 
@@ -47,8 +50,19 @@ const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}' .-]*$/u;
 const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 const PHONE_RE = /^\+?[0-9 ()-]+$/;
 const CODE_RE = /^[A-Za-z0-9-]{3,40}$/;
-// Free-text property name: letters, numbers, common punctuation only.
-const SPACE_RE = /^[\p{L}\p{M}\p{N} '&.,#()/-]+$/u;
+// Free-text postal address: letters, numbers, common punctuation and newlines.
+const ADDRESS_RE = /^[\p{L}\p{M}\p{N} '&.,#()/\n-]+$/u;
+
+// Like clean() but keeps newlines, so multi-line addresses survive.
+function cleanMultiline(v: unknown, max: number): string {
+  if (typeof v !== "string") return "";
+  return v
+    .replace(/[\u0000-\u0009\u000B-\u001F\u007F-\u009F​-‏‪-‮⁠-⁩﻿]/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\s*\n\s*/g, "\n")
+    .trim()
+    .slice(0, max + 1);
+}
 
 export function validateGuest(raw: Record<string, unknown>, now = Date.now()): ValidationResult {
   const fullName = clean(raw.fullName, 100);
@@ -64,6 +78,10 @@ export function validateGuest(raw: Record<string, unknown>, now = Date.now()): V
   if (!PHONE_RE.test(phone) || digits.length < 7 || digits.length > 15)
     return { ok: false, field: "phone", error: "Please enter a valid phone number, including country code if outside the US." };
 
+  const address = cleanMultiline(raw.address, 250);
+  if (address.length < 5 || address.length > 250 || !ADDRESS_RE.test(address))
+    return { ok: false, field: "address", error: "Please enter your home address." };
+
   const platform = clean(raw.platform, 20) as Platform;
   if (!Object.prototype.hasOwnProperty.call(PLATFORMS, platform))
     return { ok: false, field: "platform", error: "Please choose where you booked." };
@@ -71,10 +89,6 @@ export function validateGuest(raw: Record<string, unknown>, now = Date.now()): V
   const reservationCode = clean(raw.reservationCode, 40).toUpperCase();
   if (!CODE_RE.test(reservationCode))
     return { ok: false, field: "reservationCode", error: "Reservation code should be 3–40 letters, numbers or dashes." };
-
-  const space = clean(raw.space, 120);
-  if (space.length < 2 || space.length > 120 || !SPACE_RE.test(space))
-    return { ok: false, field: "space", error: "Please enter the name of the space you booked." };
 
   const checkIn = clean(raw.checkIn, 10);
   const checkOut = clean(raw.checkOut, 10);
@@ -94,12 +108,28 @@ export function validateGuest(raw: Record<string, unknown>, now = Date.now()): V
   if (guests < 1 || guests > 20)
     return { ok: false, field: "guests", error: "Please enter the number of guests (1–20)." };
 
+  const emergencyName = clean(raw.emergencyName, 100);
+  if (emergencyName.length < 2 || emergencyName.length > 100 || !NAME_RE.test(emergencyName))
+    return { ok: false, field: "emergencyName", error: "Please enter your emergency contact's name." };
+
+  const emergencyPhone = clean(raw.emergencyPhone, 25);
+  const emDigits = emergencyPhone.replace(/\D/g, "");
+  if (!PHONE_RE.test(emergencyPhone) || emDigits.length < 7 || emDigits.length > 15)
+    return { ok: false, field: "emergencyPhone", error: "Please enter a valid emergency contact phone number." };
+
+  const emergencyAddress = cleanMultiline(raw.emergencyAddress, 250);
+  if (emergencyAddress.length < 5 || emergencyAddress.length > 250 || !ADDRESS_RE.test(emergencyAddress))
+    return { ok: false, field: "emergencyAddress", error: "Please enter your emergency contact's address." };
+
   // Strict: only an explicit true / "true" counts as consent.
   const marketingOptIn = raw.marketingOptIn === true || raw.marketingOptIn === "true";
 
   return {
     ok: true,
-    data: { fullName, email, phone, platform, reservationCode, space, checkIn, checkOut, guests, marketingOptIn },
+    data: {
+      fullName, email, phone, address, platform, reservationCode, checkIn, checkOut, guests,
+      emergencyName, emergencyPhone, emergencyAddress, marketingOptIn,
+    },
   };
 }
 

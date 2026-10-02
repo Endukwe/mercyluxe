@@ -162,14 +162,20 @@ export type GuestDetails = {
   fullName: string;
   email: string;
   phone: string;
+  address: string;
   platformLabel: string;
   reservationCode: string;
-  space: string;
   checkIn: string;
   checkOut: string;
   guests: number;
+  emergencyName: string;
+  emergencyPhone: string;
+  emergencyAddress: string;
   marketingOptIn: boolean;
 };
+
+// Flatten a multi-line address onto one line for email tables.
+const oneLine = (s: string) => s.replace(/\n+/g, ", ");
 
 function guestHtml(g: GuestDetails): string {
   const first = esc(g.fullName.trim().split(" ")[0] || "there");
@@ -179,7 +185,6 @@ function guestHtml(g: GuestDetails): string {
       ${first}, thank you for completing your guest registration. We look forward to hosting you.
     </p>
     <table style="width:100%;border-collapse:collapse;margin:8px 0 24px;">
-      ${detailRow("Space", g.space)}
       ${detailRow("Check-in", g.checkIn)}
       ${detailRow("Check-out", g.checkOut)}
       ${detailRow("Guests", String(g.guests))}
@@ -199,11 +204,14 @@ function studioGuestHtml(g: GuestDetails): string {
       ${detailRow("Guest", g.fullName)}
       ${detailRow("Email", g.email)}
       ${detailRow("Phone", g.phone)}
+      ${detailRow("Address", oneLine(g.address))}
       ${detailRow("Booked via", g.platformLabel)}
       ${detailRow("Reservation", g.reservationCode)}
-      ${detailRow("Space", g.space)}
       ${detailRow("Stay", `${g.checkIn} to ${g.checkOut}`)}
       ${detailRow("Guests", String(g.guests))}
+      ${detailRow("Emergency", g.emergencyName)}
+      ${detailRow("Emergency phone", g.emergencyPhone)}
+      ${detailRow("Emergency address", oneLine(g.emergencyAddress))}
       ${detailRow("Marketing", g.marketingOptIn ? "Opted in" : "Not opted in")}
     </table>
     <a href="${url}" style="display:inline-block;background:${ONYX};color:${IVORY};text-decoration:none;padding:14px 28px;border-radius:999px;font-size:12px;letter-spacing:2px;text-transform:uppercase;">View ID in admin</a>
@@ -242,7 +250,7 @@ export async function sendGuestEmails(g: GuestDetails): Promise<void> {
       {
         from: FROM,
         to: STUDIO,
-        subject: `New guest registration: ${g.fullName} - ${g.space}`,
+        subject: `New guest registration: ${g.fullName} - ${g.reservationCode}`,
         html: studioGuestHtml(g),
         replyTo: g.email,
       },

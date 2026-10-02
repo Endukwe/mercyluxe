@@ -59,7 +59,7 @@ export default function AdminGuestsPage() {
             <thead>
               <tr className="border-b border-onyx/10 text-left text-[11px] uppercase tracking-wider text-onyx/40">
                 <th className="px-5 py-3 font-medium">Guest</th>
-                <th className="px-5 py-3 font-medium">Space</th>
+                <th className="px-5 py-3 font-medium">Phone</th>
                 <th className="px-5 py-3 font-medium">Stay</th>
                 <th className="px-5 py-3 font-medium">Booked via</th>
                 <th className="px-5 py-3 font-medium">ID</th>
@@ -82,7 +82,7 @@ export default function AdminGuestsPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 text-onyx/75">{g.space}</td>
+                    <td className="px-5 py-3.5 text-onyx/75">{g.phone}</td>
                     <td className="px-5 py-3.5 tabular-nums text-onyx/75">
                       {g.checkIn} → {g.checkOut}
                     </td>
