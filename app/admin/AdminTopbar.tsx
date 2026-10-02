@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CalendarBlank, ListChecks, Plus, SignOut } from "@phosphor-icons/react";
+import { CalendarBlank, IdentificationCard, ListChecks, Plus, SignOut } from "@phosphor-icons/react";
 
 const LINKS = [
   { href: "/admin", label: "Bookings", icon: ListChecks, exact: true },
   { href: "/admin/calendar", label: "Calendar", icon: CalendarBlank },
+  { href: "/admin/guests", label: "Guests", icon: IdentificationCard },
   { href: "/admin/new", label: "New booking", icon: Plus },
 ];
 
